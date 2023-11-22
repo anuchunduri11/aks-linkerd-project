@@ -1,0 +1,134 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-byte-order-marker
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      # - id: check-executables-have-shebangs
+        # exclude ps1 files
+        exclude: \.ps1$
+      - id: check-json
+      # - id: check-shebang-scripts-are-executable
+      - id: pretty-format-json
+        args: [ --autofix ]
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-vcs-permalinks
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: file-contents-sorter
+      - id: fix-byte-order-marker
+      - id: forbid-new-submodules
+    # - id: forbid-submodules
+      - id: mixed-line-ending
+      - id: name-tests-test
+      - id: no-commit-to-branch
+      - id: requirements-txt-fixer
+      - id: sort-simple-yaml
+      - id: trailing-whitespace
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort (python)
+        # use black compatible settings
+        args: [ --profile=black ]
+  - repo: https://github.com/asottile/setup-cfg-fmt
+    rev: v2.4.0
+    hooks:
+      - id: setup-cfg-fmt
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v3.0.0
+    hooks:
+      - id: add-trailing-comma
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.9.0
+    hooks:
+      - id: pyupgrade
+        args: [ --py310-plus ]
+  - repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: v2.0.2
+    hooks:
+      - id: autopep8
+        args: [ --in-place, --list-fixes ]
+  - repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [
+          'flake8-blind-except',
+          'flake8-docstrings',
+          'flake8-bugbear',
+          'flake8-comprehensions',
+          'flake8-docstrings',
+          'flake8-implicit-str-concat',
+          'pydocstyle>=5.0.0',
+        ]
+        args:
+          - --ignore=D100
+  - repo: https://github.com/asottile/blacken-docs
+    rev: 1.15.0
+    hooks:
+      - id: blacken-docs
+        additional_dependencies: [ black==23.3.0 ]
+        exclude: ^.github/
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.4.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [ types-all ]
+  # - repo: https://github.com/jumanjihouse/pre-commit-hooks
+  #   rev: 3.0.0
+  #   hooks:
+  #     - id: shfmt
+  #       args: [ '-l', '-i', '2', '-ci', '-sr', '-w' ]
+  #     - id: shellcheck
+  # run terraform hooks only on terraform files
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.81.0
+    hooks:
+      - id: terraform_fmt
+        args:
+        - --args=-no-color
+        - --args=-diff
+        - --args=-write=true
+      #- id: terraform_checkov
+      - id: terraform_docs
+        args:
+        - --hook-config=--path-to-file=README.md
+        - --hook-config=--add-to-existing-file=true
+        - --hook-config=--create-file-if-not-exist=true
+      - id: terraform_tflint
+        args:
+        # https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/README.md
+          - --args=--only=terraform_deprecated_interpolation
+          - --args=--only=terraform_deprecated_index
+          - --args=--only=terraform_unused_declarations
+          - --args=--only=terraform_comment_syntax
+          - --args=--only=terraform_documented_outputs
+          - --args=--only=terraform_documented_variables
+          - --args=--only=terraform_typed_variables
+          - --args=--only=terraform_module_pinned_source
+          - --args=--only=terraform_naming_convention
+          - --args=--only=terraform_required_version
+          - --args=--only=terraform_required_providers
+          - --args=--only=terraform_standard_module_structure
+          - --args=--only=terraform_workspace_remote
+          - --args=--only=terraform_unused_required_providers
+          - --args=--only=terraform_comment_syntax
+      - id: terraform_validate
+      - id: terraform_providers_lock

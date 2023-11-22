@@ -1,0 +1,37 @@
+controller:
+  image:
+    registry: anuchunduridevopsacr.azurecr.io
+    image: ingress-nginx/controller
+    tag: v1.8.1
+    digest: ""
+  admissionWebhooks:
+    patch:
+      image:
+        registry: anuchunduridevopsacr.azurecr.io
+        image: ingress-nginx/kube-webhook-certgen
+        tag: v20230407
+        digest: ""
+      podAnnotations:
+        sidecar.istio.io/inject: "false"
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+      service.beta.kubernetes.io/azure-pls-create: "true"
+      service.beta.kubernetes.io/azure-pls-name: "k8s-nginx-frontdoor-pls2"
+      # service.beta.kubernetes.io/azure-pls-ip-configuration-ip-address: "10.225.0.11"
+      # service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.225.0.10
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+  replicaCount: 3
+  annotations:
+    traffic.sidecar.istio.io/includeInboundPorts: ""
+    traffic.sidecar.istio.io/excludeInboundPorts: "80,443"
+    traffic.sidecar.istio.io/excludeOutboundIPRanges: "10.0.0.1/32" #serviceIP for kubernetes API server
+    sidecar.istio.io/inject: "true"
+defaultBackend:
+  image:
+    registry: anuchunduridevopsacr.azurecr.io
+    image: defaultbackend-amd64
+    tag: 1.5
+    digest: ""
+  podAnnotations:
+    sidecar.istio.io/rewriteAppHTTPProbes: "true"
